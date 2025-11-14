@@ -1,0 +1,56 @@
+name: Build & Release Android App
+
+on:
+  push:
+    tags:
+      - "v*"   # 例: v1.0.0, v0.1.0 などの tag で発火
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) リポジトリ取得
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2) JDK セットアップ（AGP 8 系なら JDK 17 推奨）
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # 3) Gradle キャッシュ
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      # 4) gradlew に実行権限付与
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # 5) Release ビルド (APK & AAB)
+      - name: Build Release APK & AAB
+        run: |
+          ./gradlew clean
+          ./gradlew :app:assembleRelease
+          ./gradlew :app:bundleRelease
+
+      # 6) 出力の確認（デバッグ用）
+      - name: List outputs
+        run: |
+          ls -R app/build/outputs
+
+      # 7) GitHub Release 作成 & APK / AAB を添付
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
