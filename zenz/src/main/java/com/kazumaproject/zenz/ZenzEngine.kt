@@ -1,9 +1,10 @@
-package com.kazumaproject.zenzandroiddemo
+package com.kazumaproject.zenz
 
+object ZenzEngine {
 
-object LlamaBridge {
     init {
-        System.loadLibrary("zenz_bridge")
+        // CMake の add_library(zenz SHARED ...) と一致させる
+        System.loadLibrary("zenz")
     }
 
     external fun initModel(modelPath: String)

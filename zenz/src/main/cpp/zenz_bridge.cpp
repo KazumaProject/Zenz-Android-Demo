@@ -1,5 +1,3 @@
-// zenz_bridge.cpp
-
 #include <jni.h>
 #include <string>
 #include <vector>
@@ -234,10 +232,11 @@ static std::string pure_greedy_decoding(const std::string &leftSideContext, int 
 }
 
 // ------- JNI: モデル初期化 -------
+// package com.kazumaproject.zenz; class ZenzEngine
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_initModel(
+Java_com_kazumaproject_zenz_ZenzEngine_initModel(
         JNIEnv *env,
         jobject /* thiz */,
         jstring jModelPath
@@ -281,7 +280,7 @@ Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_initModel(
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generate(
+Java_com_kazumaproject_zenz_ZenzEngine_generate(
         JNIEnv *env,
         jobject /* thiz */,
         jstring jPrompt
@@ -302,7 +301,7 @@ Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generate(
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generateWithContext(
+Java_com_kazumaproject_zenz_ZenzEngine_generateWithContext(
         JNIEnv *env,
         jobject /* thiz */,
         jstring jLeftContext,
@@ -313,20 +312,20 @@ Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generateWithContext(
     }
 
     // JNI 文字列を取得
-    const char *c_left  = env->GetStringUTFChars(jLeftContext, nullptr);
-    const char *c_input = env->GetStringUTFChars(jInput,       nullptr);
+    const char *c_left = env->GetStringUTFChars(jLeftContext, nullptr);
+    const char *c_input = env->GetStringUTFChars(jInput, nullptr);
 
-    std::string left  = c_left  ? c_left  : "";
+    std::string left = c_left ? c_left : "";
     std::string input = c_input ? c_input : "";
 
     env->ReleaseStringUTFChars(jLeftContext, c_left);
-    env->ReleaseStringUTFChars(jInput,       c_input);
+    env->ReleaseStringUTFChars(jInput, c_input);
 
     // Zenz v3 っぽい形:
     //   conditions(今回はなし) + contextTag + left + inputTag + input + outputTag
-    const std::string inputTag   = u8"\uEE00";
+    const std::string inputTag = u8"\uEE00";
     const std::string contextTag = u8"\uEE02";
-    const std::string outputTag  = u8"\uEE01";
+    const std::string outputTag = u8"\uEE01";
 
     std::string prompt;
     if (!left.empty()) {
