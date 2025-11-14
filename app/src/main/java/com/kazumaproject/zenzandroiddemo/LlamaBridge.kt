@@ -8,4 +8,5 @@ object LlamaBridge {
 
     external fun initModel(modelPath: String)
     external fun generate(prompt: String): String
+    external fun generateWithContext(leftContext: String, input: String): String
 }
