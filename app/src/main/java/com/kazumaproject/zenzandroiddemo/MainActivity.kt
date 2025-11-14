@@ -10,13 +10,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.kazumaproject.zenz.ZenzEngine   // ★ ライブラリのエンジンをインポート
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var prevContextEditText: EditText   // ★追加
+    private lateinit var prevContextEditText: EditText   // 前コンテキスト
     private lateinit var inputEditText: EditText
     private lateinit var outputTextView: TextView
     private lateinit var statusTextView: TextView
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // View の取得
-        prevContextEditText = findViewById(R.id.prevContextEditText)   // ★追加
+        prevContextEditText = findViewById(R.id.prevContextEditText)
         inputEditText = findViewById(R.id.inputEditText)
         outputTextView = findViewById(R.id.outputTextView)
         statusTextView = findViewById(R.id.statusTextView)
@@ -53,8 +54,8 @@ class MainActivity : AppCompatActivity() {
         Thread {
             try {
                 val modelFile = copyModelFromAssetsIfNeeded(modelAssetFileName)
-                // JNI 経由で llama.cpp + zenz モデルを初期化
-                LlamaBridge.initModel(modelFile.absolutePath)
+                // ★ ライブラリの ZenzEngine を初期化
+                ZenzEngine.initModel(modelFile.absolutePath)
 
                 modelLoaded = true
                 runOnUiThread {
@@ -91,8 +92,8 @@ class MainActivity : AppCompatActivity() {
 
             Thread {
                 val result = try {
-                    // ★ 前コンテキスト + 今回の読み を JNI に渡す
-                    LlamaBridge.generateWithContext(
+                    // ★ ZenzEngine.generateWithContext を利用
+                    ZenzEngine.generateWithContext(
                         leftContext = leftContext,
                         input = rawInput
                     )
@@ -133,11 +134,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun String.toKatakana(): String {
-    // ひらがな -> カタカナ簡易変換
-    return map { c ->
-        if (c in 'ぁ'..'ゖ') {
-            (c.code + 0x60).toChar()
-        } else c
+// ひらがな -> カタカナ簡易変換
+fun String.toKatakana(): String =
+    map { c ->
+        if (c in 'ぁ'..'ゖ') (c.code + 0x60).toChar() else c
     }.joinToString("")
-}

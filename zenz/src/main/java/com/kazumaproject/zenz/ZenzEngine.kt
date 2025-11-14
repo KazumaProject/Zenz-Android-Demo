@@ -1,0 +1,13 @@
+package com.kazumaproject.zenz
+
+object ZenzEngine {
+
+    init {
+        // CMake の add_library(zenz SHARED ...) と一致させる
+        System.loadLibrary("zenz")
+    }
+
+    external fun initModel(modelPath: String)
+    external fun generate(prompt: String): String
+    external fun generateWithContext(leftContext: String, input: String): String
+}
