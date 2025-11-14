@@ -276,7 +276,7 @@ Java_com_kazumaproject_zenz_ZenzEngine_initModel(
     env->ReleaseStringUTFChars(jModelPath, c_model_path);
 }
 
-// ------- JNI: 「後半の変換結果」を返す -------
+// ------- JNI: 「後半の変換結果」を返す（v1 型） -------
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -298,6 +298,8 @@ Java_com_kazumaproject_zenz_ZenzEngine_generate(
 
     return env->NewStringUTF(result.c_str());
 }
+
+// ------- JNI: 文脈 + 読み で変換（v3 っぽい） -------
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -337,6 +339,85 @@ Java_com_kazumaproject_zenz_ZenzEngine_generateWithContext(
     }
 
     // ここで pure_greedy_decoding が毎回コンテキストを作って破棄してくれる
+    std::string result = pure_greedy_decoding(prompt, /*maxCount=*/32);
+
+    return env->NewStringUTF(result.c_str());
+}
+
+// ------- JNI: 条件 + 文脈 + 読み で変換（v3 条件つき） -------
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_kazumaproject_zenz_ZenzEngine_generateWithContextAndConditions(
+        JNIEnv *env,
+        jobject /* thiz */,
+        jstring jProfile,
+        jstring jTopic,
+        jstring jStyle,
+        jstring jPreference,
+        jstring jLeftContext,
+        jstring jInput
+) {
+    if (!g_model || !g_vocab) {
+        return env->NewStringUTF("Model not initialized");
+    }
+
+    // JNI 文字列を取得（null 許容）
+    const char *c_profile = jProfile ? env->GetStringUTFChars(jProfile, nullptr) : nullptr;
+    const char *c_topic = jTopic ? env->GetStringUTFChars(jTopic, nullptr) : nullptr;
+    const char *c_style = jStyle ? env->GetStringUTFChars(jStyle, nullptr) : nullptr;
+    const char *c_preference = jPreference ? env->GetStringUTFChars(jPreference, nullptr) : nullptr;
+    const char *c_left = jLeftContext ? env->GetStringUTFChars(jLeftContext, nullptr) : nullptr;
+    const char *c_input = jInput ? env->GetStringUTFChars(jInput, nullptr) : nullptr;
+
+    std::string profile = c_profile ? c_profile : "";
+    std::string topic = c_topic ? c_topic : "";
+    std::string style = c_style ? c_style : "";
+    std::string preference = c_preference ? c_preference : "";
+    std::string left = c_left ? c_left : "";
+    std::string input = c_input ? c_input : "";
+
+    if (c_profile) env->ReleaseStringUTFChars(jProfile, c_profile);
+    if (c_topic) env->ReleaseStringUTFChars(jTopic, c_topic);
+    if (c_style) env->ReleaseStringUTFChars(jStyle, c_style);
+    if (c_preference) env->ReleaseStringUTFChars(jPreference, c_preference);
+    if (c_left) env->ReleaseStringUTFChars(jLeftContext, c_left);
+    if (c_input) env->ReleaseStringUTFChars(jInput, c_input);
+
+    // Zenz v3 で使われるタグ
+    const std::string inputTag = u8"\uEE00";
+    const std::string contextTag = u8"\uEE02";
+    const std::string profileTag = u8"\uEE03";
+    const std::string topicTag = u8"\uEE04";
+    const std::string styleTag = u8"\uEE05";
+    const std::string preferenceTag = u8"\uEE06";
+    const std::string outputTag = u8"\uEE01";
+
+    // conditions を連結
+    std::string conditions;
+    if (!profile.empty()) {
+        conditions += profileTag + profile;
+    }
+    if (!topic.empty()) {
+        conditions += topicTag + topic;
+    }
+    if (!style.empty()) {
+        conditions += styleTag + style;
+    }
+    if (!preference.empty()) {
+        conditions += preferenceTag + preference;
+    }
+
+    // プロンプト構築
+    std::string prompt;
+    if (!left.empty()) {
+        // 文脈あり: conditions + contextTag + left + inputTag + input + outputTag
+        prompt = conditions + contextTag + left + inputTag + input + outputTag;
+    } else {
+        // 文脈なし: conditions + inputTag + input + outputTag
+        prompt = conditions + inputTag + input + outputTag;
+    }
+
     std::string result = pure_greedy_decoding(prompt, /*maxCount=*/32);
 
     return env->NewStringUTF(result.c_str());
