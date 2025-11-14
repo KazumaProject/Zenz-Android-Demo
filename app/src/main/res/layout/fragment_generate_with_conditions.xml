@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 条件入力 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="Conditions（任意）"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/profileEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="profile（例：ビジネスメール）"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <EditText
+            android:id="@+id/topicEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="topic（例：ラーメンの話題）"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <EditText
+            android:id="@+id/styleEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="style（例：丁寧な表現）"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <EditText
+            android:id="@+id/preferenceEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="preference（例：絵文字は使わない）"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <!-- 文脈 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="前コンテキスト"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/prevContextEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="例）今日は疲れたので"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:padding="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <!-- 読み -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="今回変換したい読み（かな・カタカナ）"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/inputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="例）らーめん"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/convertButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="generateWithContextAndConditions を実行" />
+
+        <TextView
+            android:id="@+id/statusTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="待機中"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/outputTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="ここに結果が表示されます"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</ScrollView>

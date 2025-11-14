@@ -17,5 +17,5 @@ object ZenzEngine {
         preference: String,
         leftContext: String,
         input: String
-    )
+    ): String
 }
