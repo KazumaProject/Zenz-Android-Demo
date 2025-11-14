@@ -3,14 +3,17 @@
 
     <item
         android:id="@+id/nav_generate"
-        android:title="generate" />
+        android:icon="@drawable/outline_circle_24"
+        android:title="変換" />
 
     <item
         android:id="@+id/nav_generate_with_context"
-        android:title="withContext" />
+        android:icon="@drawable/outline_add_triangle_24"
+        android:title="前文節" />
 
     <item
         android:id="@+id/nav_generate_with_conditions"
-        android:title="withConditions" />
+        android:icon="@drawable/outline_crop_square_24"
+        android:title="ユーザー設定" />
 
 </menu>
