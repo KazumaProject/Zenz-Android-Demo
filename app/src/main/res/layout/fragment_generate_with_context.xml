@@ -51,7 +51,7 @@
             android:id="@+id/convertButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="generateWithContext を実行" />
+            android:text="変換する" />
 
         <TextView
             android:id="@+id/statusTextView"
