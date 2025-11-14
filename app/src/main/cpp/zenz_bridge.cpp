@@ -299,3 +299,46 @@ Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generate(
 
     return env->NewStringUTF(result.c_str());
 }
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_kazumaproject_zenzandroiddemo_LlamaBridge_generateWithContext(
+        JNIEnv *env,
+        jobject /* thiz */,
+        jstring jLeftContext,
+        jstring jInput
+) {
+    if (!g_model || !g_vocab) {
+        return env->NewStringUTF("Model not initialized");
+    }
+
+    // JNI 文字列を取得
+    const char *c_left  = env->GetStringUTFChars(jLeftContext, nullptr);
+    const char *c_input = env->GetStringUTFChars(jInput,       nullptr);
+
+    std::string left  = c_left  ? c_left  : "";
+    std::string input = c_input ? c_input : "";
+
+    env->ReleaseStringUTFChars(jLeftContext, c_left);
+    env->ReleaseStringUTFChars(jInput,       c_input);
+
+    // Zenz v3 っぽい形:
+    //   conditions(今回はなし) + contextTag + left + inputTag + input + outputTag
+    const std::string inputTag   = u8"\uEE00";
+    const std::string contextTag = u8"\uEE02";
+    const std::string outputTag  = u8"\uEE01";
+
+    std::string prompt;
+    if (!left.empty()) {
+        // 文脈あり
+        prompt = contextTag + left + inputTag + input + outputTag;
+    } else {
+        // 文脈なし（従来の v1 と同じ形）
+        prompt = inputTag + input + outputTag;
+    }
+
+    // ここで pure_greedy_decoding が毎回コンテキストを作って破棄してくれる
+    std::string result = pure_greedy_decoding(prompt, /*maxCount=*/32);
+
+    return env->NewStringUTF(result.c_str());
+}

@@ -16,6 +16,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var prevContextEditText: EditText   // ★追加
     private lateinit var inputEditText: EditText
     private lateinit var outputTextView: TextView
     private lateinit var statusTextView: TextView
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // View の取得
+        prevContextEditText = findViewById(R.id.prevContextEditText)   // ★追加
         inputEditText = findViewById(R.id.inputEditText)
         outputTextView = findViewById(R.id.outputTextView)
         statusTextView = findViewById(R.id.statusTextView)
@@ -69,30 +71,31 @@ class MainActivity : AppCompatActivity() {
             }
         }.start()
 
-        // 変換ボタン押下
         convertButton.setOnClickListener {
             if (!modelLoaded) {
                 Toast.makeText(this, "モデルを読み込み中です…", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            val leftContext = prevContextEditText.text.toString().trim()
             val rawInput = inputEditText.text.toString().trim().toKatakana()
+
             if (rawInput.isEmpty()) {
                 Toast.makeText(this, "カタカナまたはひらがなを入力してください", Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
             }
 
-            // v1 と同じ形: inputTag + input + outputTag
-            // ※ toKatakana() 相当の処理を Kotlin 側でやりたいならここで変換してもOK
-            val zenzPrompt = "\uEE00${rawInput}\uEE01"
-
             statusTextView.text = "変換中…"
             convertButton.isEnabled = false
 
             Thread {
                 val result = try {
-                    LlamaBridge.generate(zenzPrompt)
+                    // ★ 前コンテキスト + 今回の読み を JNI に渡す
+                    LlamaBridge.generateWithContext(
+                        leftContext = leftContext,
+                        input = rawInput
+                    )
                 } catch (e: Exception) {
                     e.printStackTrace()
                     "[error] ${e.message}"
