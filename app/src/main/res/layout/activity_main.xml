@@ -5,88 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <!-- モデルの読み込み状態などを表示するグローバルステータス -->
+    <TextView
+        android:id="@+id/globalStatusTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="モデル読み込み中…"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Fragment を差し替えるコンテナ -->
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/globalStatusTextView" />
+
+    <!-- BottomNavigationView -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <!-- 前コンテキスト入力 -->
-            <TextView
-                android:id="@+id/prevContextLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:text="前コンテキスト（これまでの文脈）"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/prevContextEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|start"
-                android:hint="例）今日は疲れたので"
-                android:inputType="textMultiLine"
-                android:minLines="2"
-                android:padding="8dp" />
-
-            <!-- 区切り -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp" />
-
-            <!-- 今回変換したい読み -->
-            <TextView
-                android:id="@+id/inputLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="4dp"
-                android:text="今回変換したい読み（かな・カタカナ）"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/inputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="例）らーめん"
-                android:inputType="text"
-                android:padding="8dp" />
-
-            <!-- ボタン -->
-            <Button
-                android:id="@+id/convertButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="かな漢字変換を実行" />
-
-            <!-- ステータス表示 -->
-            <TextView
-                android:id="@+id/statusTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="ステータス"
-                android:textSize="12sp" />
-
-            <!-- 出力結果 -->
-            <TextView
-                android:id="@+id/outputTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:text="変換結果がここに表示されます"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </ScrollView>
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

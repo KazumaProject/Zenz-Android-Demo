@@ -10,4 +10,12 @@ object ZenzEngine {
     external fun initModel(modelPath: String)
     external fun generate(prompt: String): String
     external fun generateWithContext(leftContext: String, input: String): String
+    external fun generateWithContextAndConditions(
+        profile: String,
+        topic: String,
+        style: String,
+        preference: String,
+        leftContext: String,
+        input: String
+    ): String
 }
